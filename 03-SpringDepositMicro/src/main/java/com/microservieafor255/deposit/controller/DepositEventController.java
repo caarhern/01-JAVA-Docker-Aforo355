@@ -1,16 +1,20 @@
 package com.microservieafor255.deposit.controller;
 
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.microservieafor255.deposit.domain.Transaction;
+import com.microservieafor255.deposit.domain.TransactionRedis;
 import com.microservieafor255.deposit.producer.DepositEventProducer;
 import com.microservieafor255.deposit.service.ITransactionService;
 
@@ -37,5 +41,10 @@ public class DepositEventController {
 		}
 		log.info ("despues de sendDepositEvent");
 		return ResponseEntity.status(HttpStatus.CREATED).body(transql) ;
+	}
+	
+	@GetMapping("/all")
+	public Map<String, TransactionRedis> all (){
+		return transactionService.findAll();
 	}
 }

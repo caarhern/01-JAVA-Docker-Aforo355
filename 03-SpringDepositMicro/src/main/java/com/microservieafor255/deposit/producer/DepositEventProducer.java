@@ -16,8 +16,11 @@ import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microservieafor255.deposit.domain.Transaction;
+import com.microservieafor255.deposit.domain.TransactionRedis;
+import com.microservieafor255.deposit.service.ITransactionService;
 
 @Component
 public class DepositEventProducer {
@@ -28,6 +31,8 @@ public class DepositEventProducer {
 	KafkaTemplate<Integer, String> kafkaTemplate;
 	@Autowired
 	ObjectMapper objectMapper;
+	@Autowired
+	private ITransactionService service ;
 	
 	
 	public ListenableFuture<SendResult<Integer, String>> sendDepositEvent(Transaction depositEvent ) throws JsonProcessingException{
@@ -41,7 +46,11 @@ public class DepositEventProducer {
 			@Override
 			public void onSuccess(SendResult<Integer, String> result) {
 				
-				handleSuccess(key,value, result);
+				try {
+					handleSuccess(key,value, result);
+				} catch (JsonProcessingException e) {
+					e.printStackTrace();
+				}
 			}
 
 			@Override
@@ -72,7 +81,10 @@ public class DepositEventProducer {
 		}
 	}
 	
-	private void handleSuccess (Integer key , String value , SendResult<Integer, String> result) {
+	private void handleSuccess (Integer key , String value , SendResult<Integer, String> result) throws JsonMappingException, JsonProcessingException {
+		
+		TransactionRedis trxRedis= objectMapper.readValue(value, TransactionRedis.class);
+		service.save(trxRedis);	
 		
 		log.info("Message Sent Successfully for the key: {} and the value is {} , partition is {} " ,
 				key,value , result.getRecordMetadata().partition());
