@@ -1,5 +1,6 @@
 package com.microservieafor255.deposit.service;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,12 @@ public class TransactionServiceImpl implements ITransactionService {
 	@Override
 	public Map<String, TransactionRedis> findAll(){
 		return transactionRedis.findAll();
+	}
+
+	@Override
+	public List<Transaction> findByType(String type) {
+		// TODO Auto-generated method stub
+		return trasanctionDao.findByType(type);
 	}
 
 }

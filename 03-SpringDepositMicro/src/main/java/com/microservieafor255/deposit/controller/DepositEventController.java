@@ -1,5 +1,6 @@
 package com.microservieafor255.deposit.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -46,5 +47,10 @@ public class DepositEventController {
 	@GetMapping("/all")
 	public Map<String, TransactionRedis> all (){
 		return transactionService.findAll();
+	}
+	
+	@GetMapping("/depositsbytype")
+	public List<Transaction> depositbytype(@RequestBody String type){
+		return transactionService.findByType(type);
 	}
 }
